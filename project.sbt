@@ -13,7 +13,6 @@ scalaVersion := "2.11.4"
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 lazy val cacao = FDProject(
-    "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.2",
     "org.scalatest" %% "scalatest" % "2.2.1" % "test",
     "org.parboiled" %% "parboiled" % "2.1.0"
 )
