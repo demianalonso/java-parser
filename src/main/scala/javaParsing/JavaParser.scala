@@ -1,3 +1,4 @@
+package javaParsing
 import org.parboiled2._
 import org.parboiled2.CharPredicate
 import scala.collection.immutable.Seq
@@ -23,14 +24,22 @@ class JavaParser(val input: ParserInput) extends Parser {
   }
   
   def Scope = rule {
-    optional(("private" | "public" | "default") ~ WS)
+    optional(("private" | "protected" | "public" | "default") ~ WS)
+  }
+
+  def Static = rule {
+    optional(("static") ~ WS)
+  }
+  
+  def Final = rule {
+    optional(("final") ~ WS)
   }
   
   def Field = rule {
-    Scope ~ capture(Identifier) ~ WS ~ capture(Identifier) ~ optWS ~ ';' ~ optWS ~> ((fType, name) => ASTField(name, fType))
+    Scope ~ Static ~ Final ~ capture(Identifier) ~ WS ~ capture(Identifier) ~ optWS ~ ';' ~ optWS ~> ((fType, name) => ASTField(name, fType))
   }
   
   def Method = rule {
-	  Scope ~ capture(Identifier) ~ WS ~ capture(Identifier) ~ '(' ~ ')' ~ optWS ~ '{' ~ optWS ~ '}' ~ optWS ~> ((returnType, name) => ASTMethod(name, returnType))
+	  Scope ~ Static ~ Final ~ capture(Identifier) ~ WS ~ capture(Identifier) ~ '(' ~ ')' ~ optWS ~ '{' ~ optWS ~ '}' ~ optWS ~> ((returnType, name) => ASTMethod(name, returnType))
   }
 }
