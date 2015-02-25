@@ -1,5 +1,11 @@
 import org.parboiled2._
 import org.parboiled2.CharPredicate
+import scala.collection.immutable.Seq
+
+trait ASTNode
+case class ASTClass(val name: String, val nodes: Seq[ASTNode]) extends ASTNode
+case class ASTField(val name: String, val fType: String) extends ASTNode
+case class ASTMethod(val name: String, val returnType: String) extends ASTNode
 
 class JavaParser(val input: ParserInput) extends Parser {
   val WhiteSpaceChar = CharPredicate(" \n\r\t\f")
@@ -11,7 +17,9 @@ class JavaParser(val input: ParserInput) extends Parser {
   }
 
   def Class = rule {
-    Scope ~ "class" ~ WS ~ Identifier ~ optWS ~ '{' ~ optWS ~ zeroOrMore((Field | Method) ~ optWS) ~ optWS ~ '}'
+    Scope ~ "class" ~ WS ~ capture(Identifier) ~ optWS ~ 
+    	'{' ~ optWS ~ zeroOrMore(Field | Method) ~ optWS ~ 
+    	'}' ~> ((className, nodes) => ASTClass(className, nodes))
   }
   
   def Scope = rule {
@@ -19,10 +27,10 @@ class JavaParser(val input: ParserInput) extends Parser {
   }
   
   def Field = rule {
-    Scope ~ Identifier ~ WS ~ Identifier ~ optWS ~ ';'
+    Scope ~ capture(Identifier) ~ WS ~ capture(Identifier) ~ optWS ~ ';' ~ optWS ~> ((fType, name) => ASTField(name, fType))
   }
   
   def Method = rule {
-	  Scope ~ Identifier ~ WS ~ Identifier ~ '(' ~ ')' ~ optWS ~ '{' ~ optWS ~ '}'
+	  Scope ~ capture(Identifier) ~ WS ~ capture(Identifier) ~ '(' ~ ')' ~ optWS ~ '{' ~ optWS ~ '}' ~ optWS ~> ((returnType, name) => ASTMethod(name, returnType))
   }
 }

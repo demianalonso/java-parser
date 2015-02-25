@@ -63,7 +63,7 @@ class JavaParserTest extends FlatSpec with Matchers {
     parseClass("""class MyClass { 
 
     			  }""") shouldBe 'success
-    			  
+
     parseClass("public class MyClass { }") shouldBe 'success
   }
 
@@ -110,6 +110,23 @@ class JavaParserTest extends FlatSpec with Matchers {
     			  }""") shouldBe 'success
   }
 
+  "A class " should "return an ASTClass" in {
+
+    val result = parseClass("""class MyClass { 
+			private Integer x;
+    		public Integer meth() {}
+    			  }""")
+    val astClass = result.get
+    assert(astClass.isInstanceOf[ASTClass])
+    astClass.name should be("MyClass")
+
+    astClass.nodes(0).asInstanceOf[ASTField].name should be("x")
+    astClass.nodes(0).asInstanceOf[ASTField].fType should be("Integer")
+
+    astClass.nodes(1).asInstanceOf[ASTMethod].name should be("meth")
+    astClass.nodes(1).asInstanceOf[ASTMethod].returnType should be("Integer")
+
+  }
   //  val formatter = new ErrorFormatter(showTraces = true)
   //  
   //  def check(nr: Rule[HNil, HNil], parser: Parser) =
