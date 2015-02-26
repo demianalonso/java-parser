@@ -76,7 +76,7 @@ class JavaParserTest extends FreeSpec with Matchers {
                             }""") shouldBe 'success
 
       parseClass("""class MyClass { 
-                      default String str;
+                      String str;
                             }""") shouldBe 'success
 
       parseClass("""class MyClass { 
